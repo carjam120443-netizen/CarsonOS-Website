@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090d16">
+  <meta name="description" content="CarsonOS — a collection of custom Linux distributions and operating system projects.">
+  <title>CarsonOS — Linux, Reimagined.</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090d16;
+      --panel: #111827;
+      --panel-2: #151f30;
+      --text: #edf3ff;
+      --muted: #9aaac0;
+      --accent: #65a8ff;
+      --border: #26364d;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .site-header {
+      min-height: 76px;
+      padding: 0 8%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(9, 13, 22, .94);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { font-size: 23px; font-weight: 800; letter-spacing: -.8px; }
+    .brand span, h1 span { color: var(--accent); }
+    .nav { display: flex; align-items: center; gap: 27px; }
+    .nav a { color: var(--muted); font-size: 14px; }
+    .nav a:hover, footer a:hover { color: white; }
+    .nav .github {
+      color: #07111f;
+      background: var(--accent);
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-weight: 750;
+    }
+    .menu-button {
+      display: none;
+      padding: 8px 12px;
+      color: white;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    .hero {
+      min-height: 610px;
+      padding: 105px 8% 90px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 45px;
+      align-items: center;
+      background: radial-gradient(ellipse at 75% 40%, #17345a 0%, transparent 48%), var(--bg);
+    }
+    .tag {
+      display: inline-block;
+      padding: 8px 13px;
+      border: 1px solid #31517b;
+      border-radius: 30px;
+      background: #14243b;
+      color: #8fc4ff;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 25px 0;
+      font-size: clamp(48px, 6vw, 76px);
+      line-height: 1.04;
+      letter-spacing: -3px;
+    }
+    .hero-copy {
+      max-width: 570px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.8;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 30px; }
+    .button {
+      display: inline-block;
+      padding: 14px 22px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #07111f;
+      font-weight: 750;
+      transition: transform .2s, border-color .2s;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button.secondary { border-color: var(--border); background: transparent; color: var(--text); }
+    .terminal {
+      overflow: hidden;
+      border: 1px solid #344760;
+      border-radius: 13px;
+      background: #080d15;
+      box-shadow: 0 25px 80px #0008;
+      transform: rotate(1deg);
+    }
+    .terminal-top {
+      display: flex;
+      gap: 7px;
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      background: #141d2a;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #71849c; }
+    .terminal-content {
+      min-height: 240px;
+      padding: 27px;
+      color: #b8cce4;
+      font: 13px/2 Consolas, monospace;
+    }
+    .terminal-content pre { overflow-x: auto; color: #70b6ff; font: inherit; line-height: 1.35; }
+    .green { color: #71e5a0; }
+    section { padding: 85px 8%; }
+    .section-head { margin-bottom: 35px; }
+    .section-head h2 { margin: 0 0 12px; font-size: 35px; letter-spacing: -1px; }
+    .section-head p { color: var(--muted); line-height: 1.7; }
+    .distro-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 19px; }
+    .card {
+      padding: 27px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--panel);
+      transition: transform .2s, border-color .2s;
+    }
+    .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+    .card-top { display: flex; align-items: center; justify-content: space-between; }
+    .icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #203650;
+      font-size: 22px;
+    }
+    .status { padding: 6px 10px; border-radius: 20px; background: #173d30; color: #7be5ac; font-size: 11px; }
+    .status.dev { background: #45351b; color: #ffd080; }
+    .card h3 { margin: 20px 0 9px; font-size: 22px; }
+    .card p { min-height: 50px; color: var(--muted); line-height: 1.7; }
+    .card a { color: var(--accent); font-size: 14px; font-weight: 700; }
+    .more {
+      margin: -30px 8% 45px;
+      padding: 27px;
+      border: 1px solid #31517b;
+      border-radius: 13px;
+      background: linear-gradient(120deg, #14243b, #111827);
+      text-align: center;
+    }
+    .more strong { color: var(--accent); font-size: 19px; }
+    .more p { margin-bottom: 0; color: var(--muted); line-height: 1.7; }
+    .features { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: #0d1420; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .feature { padding: 22px; }
+    .feature .icon { margin-bottom: 17px; }
+    .feature p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .download-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      padding: 42px;
+      border: 1px solid #31517b;
+      border-radius: 16px;
+      background: linear-gradient(120deg, #142a47, #111827);
+    }
+    .download-panel h2 { margin-top: 0; }
+    .download-panel p { color: #b2c2d8; line-height: 1.7; }
+    .dev-panel { padding: 28px; border: 1px solid var(--border); border-radius: 13px; background: var(--panel); }
+    .dev-row { display: flex; justify-content: space-between; gap: 20px; padding: 17px 0; border-bottom: 1px solid var(--border); }
+    .dev-row:last-child { border: 0; }
+    .dev-row span:last-child { color: var(--muted); }
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 35px 8%;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer strong { color: var(--text); }
+    @media (max-width: 750px) {
+      .site-header { padding: 0 5%; }
+      .menu-button { display: block; }
+      .nav {
+        display: none;
+        position: absolute;
+        top: 76px;
+        left: 0;
+        right: 0;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 25px;
+        border-bottom: 1px solid var(--border);
+        background: #0c1421;
+      }
+      .nav.open { display: flex; }
+      .hero { grid-template-columns: 1fr; padding: 75px 6%; }
+      section { padding: 65px 6%; }
+      .distro-grid, .feature-grid { grid-template-columns: 1fr; }
+      .download-panel { align-items: flex-start; flex-direction: column; }
+      .dev-row { flex-direction: column; gap: 7px; }
+      .more { margin: -15px 6% 35px; }
+      h1 { letter-spacing: -2px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#">Carson<span>OS</span></a>
+    <button class="menu-button" id="menuButton" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="siteNav">☰</button>
+    <nav class="nav" id="siteNav" aria-label="Main navigation">
+      <a href="#distros">Distributions</a>
+      <a href="#features">Features</a>
+      <a href="#downloads">Downloads</a>
+      <a href="#development">Development</a>
+      <a class="github" href="https://github.com/carjam120443-netizen" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <span class="tag">Independent Linux projects</span>
+        <h1>Linux, <span>reimagined.</span></h1>
+        <p class="hero-copy">
+          Welcome to CarsonOS. A collection of custom Linux distributions,
+          experiments, and operating system projects built with customization,
+          flexibility, and the Linux community in mind.
+        </p>
+        <div class="actions">
+          <a class="button" href="#distros">Explore distributions →</a>
+          <a class="button secondary" href="https://github.com/carjam120443-netizen" target="_blank" rel="noopener noreferrer">View GitHub</a>
+        </div>
+      </div>
+
+      <div class="terminal" aria-label="CarsonOS terminal preview">
+        <div class="terminal-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="terminal-content">
+          <div class="green">carson@carsonos:~$ neofetch</div>
+          <pre>
+   ____                         
+  / ___|__ _ _ __ ___  ___  _ __
+ | |   / _` | '__/ __|/ _ \| '_ \
+ | |__| (_| | |  \__ \ (_) | | | |
+  \____\__,_|_|  |___/\___/|_| |_|
+          </pre>
+          <div>OS: CarsonOS Linux</div>
+          <div>Kernel: Linux</div>
+          <div>Shell: bash</div>
+          <div>Creator: Carson</div>
+          <div class="green">carson@carsonos:~$ _</div>
+        </div>
+      </div>
+    </div>
+
+    <section id="distros">
+      <div class="section-head">
+        <h2>Explore the distributions.</h2>
+        <p>Different bases, different desktops, one project family.</p>
+      </div>
+      <div class="distro-grid">
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">⌘</div><span class="status">Project</span></div>
+          <h3>CarsonOS Arch</h3>
+          <p>An Arch-based distribution focused on flexibility, customization, and desktop choice.</p>
+          <a href="https://github.com/carjam120443-netizen" target="_blank" rel="noopener noreferrer">Explore on GitHub ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">◆</div><span class="status">Project</span></div>
+          <h3>CarsonOS Debian</h3>
+          <p>A Debian-based distribution with an XFCE desktop and a custom installation experience.</p>
+          <a href="https://github.com/carjam120443-netizen" target="_blank" rel="noopener noreferrer">Explore on GitHub ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">◈</div><span class="status dev">In Development</span></div>
+          <h3>CarsonOS Fedora</h3>
+          <p>A Fedora-based edition with multiple desktop environment options.</p>
+          <a href="https://github.com/carjam120443-netizen/CarsonOS-Fedora" target="_blank" rel="noopener noreferrer">Explore repository ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">⬡</div><span class="status">Project</span></div>
+          <h3>CarsonOS Hybrid</h3>
+          <p>An experimental branch of the CarsonOS family exploring a hybrid Linux experience.</p>
+          <a href="https://github.com/carjam120443-netizen/CarsonOS-Hybrid" target="_blank" rel="noopener noreferrer">Explore repository ↗</a>
+        </article>
+      </div>
+    </section>
+
+    <aside class="more" aria-label="Future projects disclaimer">
+      <strong>More to come!</strong>
+      <p>This is only the beginning of CarsonOS. More distributions, editions, features, and operating system projects are planned. Stay tuned for future releases and updates!</p>
+    </aside>
+
+    <section class="features" id="features">
+      <div class="section-head">
+        <h2>Built around freedom.</h2>
+        <p>What makes the CarsonOS project family interesting.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="icon" aria-hidden="true">⚙</div>
+          <h3>Desktop choices</h3>
+          <p>Experiment with Cinnamon, KDE Plasma, XFCE, GNOME, and other desktop environments.</p>
+        </div>
+        <div class="feature">
+          <div class="icon" aria-hidden="true">⌨</div>
+          <h3>Linux at its core</h3>
+          <p>Built around Linux distributions, package management, and open-source tools.</p>
+        </div>
+        <div class="feature">
+          <div class="icon" aria-hidden="true">✦</div>
+          <h3>Custom experience</h3>
+          <p>Custom branding, installers, utilities, and configurations across different editions.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="downloads">
+      <div class="download-panel">
+        <div>
+          <h2>Get started with CarsonOS.</h2>
+          <p>Visit the project repositories to find available builds, source code, and installation information.</p>
+        </div>
+        <a class="button" href="https://github.com/carjam120443-netizen" target="_blank" rel="noopener noreferrer">Browse projects ↗</a>
+      </div>
+    </section>
+
+    <section id="development">
+      <div class="section-head">
+        <h2>Development status.</h2>
+        <p>CarsonOS is an evolving collection of independent projects.</p>
+      </div>
+      <div class="dev-panel">
+        <div class="dev-row"><strong>CarsonOS Arch</strong><span>Project development</span></div>
+        <div class="dev-row"><strong>CarsonOS Debian</strong><span>Project development</span></div>
+        <div class="dev-row"><strong>CarsonOS Fedora</strong><span class="status dev">In Development</span></div>
+        <div class="dev-row"><strong>CarsonOS Hybrid</strong><span>Project development</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>CarsonOS</strong> — Linux, reimagined.</div>
+    <div>Independent project by Carson · 2026</div>
+    <div><a href="https://github.com/carjam120443-netizen" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
+  </footer>
+
+  <script>
+    const menuButton = document.getElementById("menuButton");
+    const siteNav = document.getElementById("siteNav");
+
+    function closeMenu() {
+      siteNav.classList.remove("open");
+      menuButton.setAttribute("aria-expanded", "false");
+      menuButton.setAttribute("aria-label", "Open navigation");
+    }
+
+    menuButton.addEventListener("click", () => {
+      const isOpen = siteNav.classList.toggle("open");
+      menuButton.setAttribute("aria-expanded", String(isOpen));
+      menuButton.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
+    });
+
+    siteNav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", closeMenu);
+    });
+  </script>
+</body>
+</html>
